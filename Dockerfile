@@ -8,4 +8,4 @@ USER frappe
 
 # NO chmod here
 
-ENTRYPOINT ["/home/frappe/start.sh"]
+CMD ["bash","/home/frappe/start.sh"]
