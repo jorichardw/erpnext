@@ -1,10 +1,11 @@
 FROM frappe/erpnext:latest
 
-# Copy start.sh to frappe home directory
+# Copy start.sh to frappe home directory, already executable
 COPY start.sh /home/frappe/start.sh
 
-# Change ownership and permissions as frappe user
+# Switch to frappe user (default user, can be omitted if already default)
 USER frappe
-RUN chmod +x /home/frappe/start.sh
+
+# NO chmod here
 
 ENTRYPOINT ["/home/frappe/start.sh"]
