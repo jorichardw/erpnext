@@ -7,7 +7,12 @@ until pg_isready -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER"; do
 done
 echo "Database is ready!"
 
+# Activate bench environment
+cd /home/frappe/frappe-bench
+
+# Create site if it doesn't already exist
 if [ ! -d "/home/frappe/frappe-bench/sites/${SITE_NAME}" ]; then
+  echo "Creating new site: ${SITE_NAME}"
   bench new-site ${SITE_NAME} \
     --db-type postgres \
     --db-host ${DB_HOST} \
@@ -16,10 +21,13 @@ if [ ! -d "/home/frappe/frappe-bench/sites/${SITE_NAME}" ]; then
     --db-user ${DB_USER} \
     --db-password ${DB_PASSWORD} \
     --admin-password Admin12345 \
-    --root-password ${DB_PASSWORD}
+    --db-root-password ${DB_PASSWORD} \
+    --install-app erpnext \
+    --no-input
 
-  bench --site ${SITE_NAME} install-app erpnext
+  echo "Site ${SITE_NAME} created and ERPNext installed!"
 fi
 
-# Start the production server
-bench serve --port 8000
+# Start production WSGI server
+echo "Starting production server on port 8000..."
+exec bench serve --port 8000
