@@ -19,8 +19,7 @@ if [ ! -d "/home/frappe/frappe-bench/sites/${SITE_NAME}" ]; then
     --db-name ${DB_NAME} \
     --db-user ${DB_USER} \
     --db-password ${DB_PASSWORD} \
-    --admin-password Admin12345 \
-    --db-root-password ${DB_PASSWORD}
+    --admin-password Admin12345
 
   jq '. + {"db_sslmode":"require"}' sites/${SITE_NAME}/site_config.json > sites/${SITE_NAME}/site_config_tmp.json
   mv sites/${SITE_NAME}/site_config_tmp.json sites/${SITE_NAME}/site_config.json
