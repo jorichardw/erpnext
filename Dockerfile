@@ -1,12 +1,10 @@
 FROM frappe/erpnext:latest
 
-# Copy your startup script
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
+# Copy start.sh to frappe home directory
+COPY start.sh /home/frappe/start.sh
 
-# Install postgres client to run pg_isready
-USER root
-RUN apt-get update && apt-get install -y postgresql-client
+# Change ownership and permissions as frappe user
 USER frappe
+RUN chmod +x /home/frappe/start.sh
 
-ENTRYPOINT ["/start.sh"]
+ENTRYPOINT ["/home/frappe/start.sh"]
