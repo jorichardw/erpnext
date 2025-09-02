@@ -9,6 +9,8 @@ echo "Database is ready!"
 
 cd /home/frappe/frappe-bench
 
+export PGSSLMODE=require
+
 if [ ! -d "/home/frappe/frappe-bench/sites/${SITE_NAME}" ]; then
   bench new-site ${SITE_NAME} \
     --db-type postgres \
