@@ -1,13 +1,17 @@
 #!/bin/bash
 set -e
 
-echo "Waiting for database..."
+echo "⏳ Waiting for database..."
 until pg_isready -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER"; do
   sleep 3
 done
-echo "Database is ready!"
+echo "✅ Database is ready!"
 
-if [ ! -d "/home/frappe/frappe-bench/sites/${SITE_NAME}" ]; then
+SITE_PATH="/home/frappe/frappe-bench/sites/${SITE_NAME}"
+
+if [ ! -d "$SITE_PATH" ]; then
+  echo "📦 Creating new site: $SITE_NAME"
+
   bench new-site ${SITE_NAME} \
     --db-type postgres \
     --db-host ${DB_HOST} \
@@ -18,8 +22,14 @@ if [ ! -d "/home/frappe/frappe-bench/sites/${SITE_NAME}" ]; then
     --admin-password Admin12345 \
     --no-mariadb-check
 
+  echo "⬇️ Getting ERPNext app..."
+  bench get-app https://github.com/frappe/erpnext
+
+  echo "📥 Installing ERPNext..."
   bench --site ${SITE_NAME} install-app erpnext
+else
+  echo "✅ Site already exists, skipping creation."
 fi
 
-# Run the production-style server
+echo "🚀 Starting development server..."
 bench serve --port 8000
