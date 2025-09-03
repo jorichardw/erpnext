@@ -1,20 +1,21 @@
 #!/bin/bash
 set -e
 
-# Wait for database
 echo "⏳ Waiting for database..."
 until pg_isready -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER"; do
   sleep 3
 done
 echo "✅ Database is ready!"
 
-# Set PostgreSQL password
-export PGPASSWORD="$DB_PASSWORD"
+SITE_PATH="/home/frappe/frappe-bench/sites/${SITE_NAME}"
 
-# Create site if it doesn't exist
-if [ ! -f "/home/frappe/frappe-bench/sites/${SITE_NAME}/site_config.json" ]; then
+if [ ! -d "$SITE_PATH" ]; then
   echo "📦 Creating new site: $SITE_NAME"
-  
+
+  # Set both regular and root PostgreSQL passwords
+  export PGPASSWORD="$DB_PASSWORD"
+  export PG_ROOT_PASSWORD="${DB_ROOT_PASSWORD:-$DB_PASSWORD}"
+
   bench new-site ${SITE_NAME} \
     --db-type postgres \
     --db-host ${DB_HOST} \
@@ -22,20 +23,20 @@ if [ ! -f "/home/frappe/frappe-bench/sites/${SITE_NAME}/site_config.json" ]; the
     --db-name ${DB_NAME} \
     --db-user ${DB_USER} \
     --db-password ${DB_PASSWORD} \
-    --admin-password ${ADMIN_PASSWORD:-Admin12345} \
+    --db-root-username ${DB_USER} \  # Use same user as root
+    --db-root-password ${PG_ROOT_PASSWORD} \  # Use same password as root
+    --admin-password Admin12345 \
     --mariadb-user-host-login-scope='%' \
     --force
-  
-  # Install ERPNext if not already installed
-  if [ ! -d "/home/frappe/frappe-bench/apps/erpnext" ]; then
-    bench get-app erpnext
-  fi
-  
+
+  echo "⬇️ Getting ERPNext app..."
+  bench get-app erpnext
+
+  echo "📥 Installing ERPNext..."
   bench --site ${SITE_NAME} install-app erpnext
 else
-  echo "✅ Site already exists."
-  bench --site ${SITE_NAME} migrate
+  echo "✅ Site already exists, skipping creation."
 fi
 
-echo "🚀 Starting server..."
+echo "🚀 Starting development server..."
 bench serve --port 8000
