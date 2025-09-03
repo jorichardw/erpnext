@@ -20,7 +20,7 @@ if [ ! -d "$SITE_PATH" ]; then
     --db-user ${DB_USER} \
     --db-password ${DB_PASSWORD} \
     --admin-password Admin12345 \
-    --no-mariadb-check
+    --no-mariadb-socket
 
   echo "⬇️ Getting ERPNext app..."
   bench get-app https://github.com/frappe/erpnext
