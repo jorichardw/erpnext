@@ -23,8 +23,8 @@ if [ ! -d "$SITE_PATH" ]; then
     --db-name ${DB_NAME} \
     --db-user ${DB_USER} \
     --db-password ${DB_PASSWORD} \
-    --root-db-name ${ROOT_DB_USER} \
-    --root-db-password ${ROOT_DB_PASSWORD} \
+    --db-name ${ROOT_DB_USER} \
+    --db-root-username ${ROOT_DB_PASSWORD} \
     --admin-password Admin12345 \
     --no-mariadb-check
 
