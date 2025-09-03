@@ -12,6 +12,10 @@ SITE_PATH="/home/frappe/frappe-bench/sites/${SITE_NAME}"
 if [ ! -d "$SITE_PATH" ]; then
   echo "📦 Creating new site: $SITE_NAME"
 
+  export ROOT_DB_USER=${DB_USER:-postgres}
+  export ROOT_DB_PASSWORD=${DB_PASSWORD:-postgres}
+  export PGPASSWORD="$DB_PASSWORD"
+
   bench new-site ${SITE_NAME} \
     --db-type postgres \
     --db-host ${DB_HOST} \
@@ -19,8 +23,10 @@ if [ ! -d "$SITE_PATH" ]; then
     --db-name ${DB_NAME} \
     --db-user ${DB_USER} \
     --db-password ${DB_PASSWORD} \
+    --root-db-name ${ROOT_DB_USER} \
+    --root-db-password ${ROOT_DB_PASSWORD} \
     --admin-password Admin12345 \
-    --no-mariadb-socket
+    --no-mariadb-check
 
   echo "⬇️ Getting ERPNext app..."
   bench get-app https://github.com/frappe/erpnext
